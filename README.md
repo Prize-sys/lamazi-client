@@ -5,7 +5,7 @@ A full-stack mental health therapy booking platform with three separate projects
 ## Architecture
 
 ```
-mindcare/
+lamazi/
 ├── backend/              # Go REST API (shared by both frontends)
 │   ├── handlers/         # Route handlers
 │   ├── middleware/        # JWT auth middleware
@@ -54,12 +54,7 @@ docker-compose up --build
 cd backend
 # Install dependencies
 go mod download
-# Set DATABASE_URL env var pointing to your PostgreSQL
-export DATABASE_URL="postgres://mindcare:mindcare123@localhost:5432/mindcare?sslmode=disable"
-export JWT_SECRET="dev-secret"
-# Run schema
-psql $DATABASE_URL -f db/schema.sql
-psql $DATABASE_URL -f db/seed.sql
+
 # Start server
 go run main.go
 ```

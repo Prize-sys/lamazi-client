@@ -1,0 +1,12 @@
+version: "3.8"
+
+services:
+  frontend:
+    build:
+      context: .
+      args:
+        VITE_API_URL: https://back.lamazi.com
+    container_name: lamazi-client
+    ports:
+      - "3001:80"
+    restart: always
