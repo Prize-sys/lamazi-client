@@ -14,10 +14,18 @@ export default function Login() {
     setError('');
     setLoading(true);
     try {
-      await login(form.email, form.password);
-      navigate('/');
+      const data = await login(form.email, form.password);
+
+      // Redirect based on role returned from backend
+      if (data.role === 'admin') {
+        navigate('/admin/dashboard');
+      } else if (data.role === 'therapist') {
+        navigate('/therapist/dashboard');
+      } else {
+        navigate('/');
+      }
     } catch (err) {
-      setError(err.response?.data?.error || 'Login failed. Please try again.');
+      setError(err.message || err.response?.data?.error || 'Login failed. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -32,7 +40,7 @@ export default function Login() {
         </div>
         <div className="card" style={{ padding: 28 }}>
           <h2 style={{ fontSize: 20, fontWeight: 700, marginBottom: 4 }}>Welcome back</h2>
-          <p style={{ fontSize: 13, color: 'var(--gray-500)', marginBottom: 24 }}>Sign in to your client account</p>
+          <p style={{ fontSize: 13, color: 'var(--gray-500)', marginBottom: 24 }}>Sign in to your account</p>
           {error && <div className="alert alert-error">{error}</div>}
           <form onSubmit={handleSubmit}>
             <div className="form-group">
