@@ -21,7 +21,7 @@ lamazi/
 
 ```bash
 # 1. Clone and enter project
-cd mindcare
+cd lamazi-client
 
 # 2. Copy environment file
 cp .env.example .env

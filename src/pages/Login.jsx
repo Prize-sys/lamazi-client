@@ -27,7 +27,7 @@ export default function Login() {
     <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #EFF6FF 0%, #F5F3FF 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
       <div style={{ width: '100%', maxWidth: 420 }}>
         <div style={{ textAlign: 'center', marginBottom: 32 }}>
-          <div style={{ fontFamily: 'Fraunces, serif', fontSize: 32, fontWeight: 600, color: 'var(--blue)', marginBottom: 6 }}>MindCare</div>
+          <div style={{ fontFamily: 'Fraunces, serif', fontSize: 32, fontWeight: 600, color: 'var(--blue)', marginBottom: 6 }}>LamaziSpa</div>
           <p style={{ color: 'var(--gray-500)', fontSize: 14 }}>Your journey to wellness</p>
         </div>
         <div className="card" style={{ padding: 28 }}>
