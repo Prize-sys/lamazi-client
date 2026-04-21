@@ -63,7 +63,7 @@ go run main.go
 ```bash
 cd client-frontend
 npm install
-REACT_APP_API_URL=http://localhost:8080/api npm start
+VITEAPP_API_URL=http://localhost:8080/api npm start
 # Runs on http://localhost:3000
 ```
 
@@ -71,7 +71,7 @@ REACT_APP_API_URL=http://localhost:8080/api npm start
 ```bash
 cd admin-frontend
 npm install
-REACT_APP_API_URL=http://localhost:8080/api npm start
+VITE_APP_API_URL=http://localhost:8080/api npm start
 # Runs on http://localhost:3001
 ```
 

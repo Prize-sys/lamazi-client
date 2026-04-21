@@ -4,12 +4,26 @@ import NavBar from '../components/NavBar';
 import { therapistAPI } from '../api';
 
 function Stars({ rating }) {
-  return (
-    <span style={{ color: '#F59E0B', fontSize: 13 }}>
-      {'★'.repeat(Math.round(rating))}{'☆'.repeat(5 - Math.round(rating))}
-    </span>
-  );
+  const full = Math.round(rating || 0);
+  return <span className="star">{'★'.repeat(full)}{'☆'.repeat(5 - full)}</span>;
 }
+
+function FilterIcon() {
+  return <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 01-.659 1.591l-5.432 5.432a2.25 2.25 0 00-.659 1.591v2.927a2.25 2.25 0 01-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 00-.659-1.591L3.659 7.409A2.25 2.25 0 013 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0112 3z" /></svg>;
+}
+
+const DEMO_THERAPISTS = [
+  { id: '10000000-0000-0000-0000-000000000001', full_name: 'Dr. Sarah Johnson', rating: 4.9, review_count: 127, specialties: ['Anxiety', 'Depression', 'Stress Management'], bio: 'Licensed clinical psychologist with 10+ years of experience helping clients overcome anxiety and depression.', price_per_session: 80 },
+  { id: '10000000-0000-0000-0000-000000000002', full_name: 'Michael Chen', rating: 4.8, review_count: 93, specialties: ['Couples Therapy', 'Relationship Issues', 'Communication'], bio: 'Experienced marriage and family therapist specializing in helping couples build stronger, healthier relationships.', price_per_session: 95 },
+  { id: '10000000-0000-0000-0000-000000000003', full_name: 'Dr. Emily Rodriguez', rating: 5.0, review_count: 156, specialties: ['Trauma', 'PTSD', 'Grief Counseling'], bio: 'Trauma-informed therapist with specialized training in EMDR and somatic experiencing. Compassionate care.', price_per_session: 110 },
+  { id: '10000000-0000-0000-0000-000000000004', full_name: 'James Wilson', rating: 4.7, review_count: 84, specialties: ['Teen Support', 'ADHD', 'Academic Stress'], bio: 'Child and adolescent psychologist dedicated to helping teens navigate challenges including ADHD and academic stress.', price_per_session: 75 },
+  { id: '10000000-0000-0000-0000-000000000005', full_name: 'Dr. Priya Patel', rating: 4.9, review_count: 142, specialties: ['Anxiety', 'OCD', 'Mindfulness'], bio: 'Specializing in cognitive-behavioral therapy and mindfulness-based approaches for anxiety disorders.', price_per_session: 85 },
+  { id: '10000000-0000-0000-0000-000000000006', full_name: 'Amanda Foster', rating: 4.8, review_count: 98, specialties: ['Depression', 'Life Transitions', 'Self-Esteem'], bio: 'Compassionate therapist helping clients navigate major life transitions, build self-esteem, and overcome challenges.', price_per_session: 70 },
+];
+
+const AVATAR_COLORS = ['#6366F1', '#EC4899', '#F59E0B', '#10B981', '#3B82F6', '#8B5CF6'];
+const getColor = (name) => AVATAR_COLORS[name.charCodeAt(0) % AVATAR_COLORS.length];
+const getInitials = (name) => name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
 
 export default function Home() {
   const [therapists, setTherapists] = useState([]);
@@ -17,17 +31,14 @@ export default function Home() {
   const [search, setSearch] = useState('');
   const navigate = useNavigate();
 
-  useEffect(() => {
-    loadTherapists();
-  }, []);
+  useEffect(() => { loadTherapists(); }, []);
 
   const loadTherapists = async (q = '') => {
     setLoading(true);
     try {
       const res = await therapistAPI.list({ q });
-      setTherapists(res.data.therapists || []);
+      setTherapists(res.data.therapists || DEMO_THERAPISTS);
     } catch {
-      // Use demo data if API unavailable
       setTherapists(DEMO_THERAPISTS);
     } finally {
       setLoading(false);
@@ -40,61 +51,61 @@ export default function Home() {
     if (val.length === 0 || val.length > 2) loadTherapists(val);
   };
 
-  // Avatar fallback using initials
-  const getInitials = (name) => name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
-  const colors = ['#6366F1', '#EC4899', '#F59E0B', '#10B981', '#3B82F6', '#8B5CF6'];
-  const getColor = (name) => colors[name.charCodeAt(0) % colors.length];
-
   return (
     <div className="page">
       <NavBar />
+
+      {/* Hero Banner */}
       <div className="hero">
         <h1>Find Your Perfect Therapist</h1>
         <p>Connect with verified, licensed professionals who understand your needs</p>
         <div className="search-box">
-          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" style={{ width: 18, height: 18, color: '#9CA3AF', flexShrink: 0 }}>
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-          </svg>
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
           <input placeholder="Search by name, specialty, or concern..." value={search} onChange={handleSearch} />
         </div>
       </div>
 
-      <div style={{ padding: '16px 16px 4px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <span style={{ fontSize: 14, color: 'var(--gray-500)' }}>{therapists.length} therapists available</span>
+      {/* Filters Row */}
+      <div className="filters-row">
+        <span>{therapists.length} therapists available</span>
+        <button className="btn-filter">
+          <FilterIcon /> Filters
+        </button>
       </div>
 
       {loading ? (
         <div className="spinner" />
       ) : (
         <div className="therapist-grid">
-          {therapists.map(t => (
-            <div key={t.id} className="card therapist-card" onClick={() => navigate(`/therapist/${t.id}`)}>
+          {therapists.map((t, idx) => (
+            <div key={t.id} className="therapist-card" onClick={() => navigate(`/therapist/${t.id}`)}>
               <div className="therapist-card-img">
                 {t.avatar_url ? (
                   <img src={t.avatar_url} alt={t.full_name} />
                 ) : (
-                  <div style={{ height: 180, display: 'flex', alignItems: 'center', justifyContent: 'center', background: getColor(t.full_name) }}>
-                    <span style={{ fontSize: 48, fontWeight: 700, color: 'white' }}>{getInitials(t.full_name)}</span>
+                  <div className="therapist-avatar-placeholder" style={{ background: getColor(t.full_name) }}>
+                    <span>{getInitials(t.full_name)}</span>
                   </div>
                 )}
-                <div style={{ position: 'absolute', top: 10, right: 10, background: '#16A34A', color: 'white', padding: '3px 8px', borderRadius: 20, fontSize: 11, fontWeight: 600 }}>
-                  ✓ Verified
-                </div>
+                <div className="verified-badge">✓ Verified</div>
               </div>
               <div className="therapist-card-body">
                 <h3>{t.full_name}</h3>
                 <div className="rating">
                   <Stars rating={t.rating} />
-                  <span>{t.rating?.toFixed(1)} • {t.review_count} reviews</span>
+                  <span>{t.rating ? t.rating.toFixed(1) : '—'} • {t.review_count} reviews</span>
                 </div>
                 <div className="tags">
                   {(t.specialties || []).slice(0, 3).map(s => (
                     <span key={s} className="tag">{s}</span>
                   ))}
                 </div>
-                <p style={{ WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', display: '-webkit-box' }}>{t.bio}</p>
+                <p>{t.bio}</p>
                 <div className="price">$ {t.price_per_session}/session</div>
-                <button className="btn-primary" style={{ marginTop: 12 }} onClick={e => { e.stopPropagation(); navigate(`/book/${t.id}`); }}>
+                <button
+                  className="btn-primary"
+                  onClick={e => { e.stopPropagation(); navigate(`/book/${t.id}`); }}
+                >
                   Book Session
                 </button>
               </div>
@@ -105,9 +116,3 @@ export default function Home() {
     </div>
   );
 }
-
-const DEMO_THERAPISTS = [
-  { id: '10000000-0000-0000-0000-000000000001', full_name: 'Dr. Sarah Johnson', rating: 4.9, review_count: 127, specialties: ['Anxiety', 'Depression', 'Stress Management'], bio: 'Licensed clinical psychologist with 10+ years helping clients overcome anxiety and depression.', price_per_session: 80 },
-  { id: '10000000-0000-0000-0000-000000000002', full_name: 'Michael Chen', rating: 4.8, review_count: 93, specialties: ['Couples Therapy', 'Relationship Issues', 'Communication'], bio: 'Experienced marriage and family therapist specializing in helping couples build stronger relationships.', price_per_session: 95 },
-  { id: '10000000-0000-0000-0000-000000000003', full_name: 'Dr. Emily Rodriguez', rating: 5.0, review_count: 156, specialties: ['Trauma', 'PTSD', 'Grief Counseling'], bio: 'Trauma-informed therapist with specialized training in EMDR and somatic experiencing.', price_per_session: 110 },
-];
