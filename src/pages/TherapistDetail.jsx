@@ -8,6 +8,39 @@ function Stars({ rating, size=14 }) {
   return <span style={{ color:'#F59E0B', fontSize:size }}>{'★'.repeat(full)}{'☆'.repeat(5-full)}</span>;
 }
 
+function formatSlot(slotDate, slotTime) {
+  const isISO = slotDate && /^\d{4}-\d{2}-\d{2}T/.test(slotDate);
+
+  if (isISO) {
+    const base = new Date(slotDate);
+
+    if (slotTime && /^\d{2}:\d{2}/.test(slotTime)) {
+      const [h, m] = slotTime.split(':').map(Number);
+      const h12 = h % 12 || 12;
+      const ampm = h < 12 ? 'AM' : 'PM';
+      const dateLabel = base.toLocaleDateString('en-KE', {
+        weekday: 'short', month: 'short', day: 'numeric', timeZone: 'Africa/Nairobi'
+      });
+      return { date: dateLabel, time: `${h12}:${String(m).padStart(2,'0')} ${ampm} EAT` };
+    }
+
+    const eat = new Date(base.getTime() + 3 * 60 * 60 * 1000);
+    const dateLabel = eat.toLocaleDateString('en-KE', { weekday:'short', month:'short', day:'numeric' });
+    const timeLabel = eat.toLocaleTimeString('en-KE', { hour:'2-digit', minute:'2-digit', hour12:true }) + ' EAT';
+    return { date: dateLabel, time: timeLabel };
+  }
+
+  // Fallback: pre-formatted strings (DEMO data)
+  if (slotTime && /^\d{2}:\d{2}$/.test(slotTime)) {
+    const [h, m] = slotTime.split(':').map(Number);
+    const h12 = h % 12 || 12;
+    const ampm = h < 12 ? 'AM' : 'PM';
+    return { date: slotDate, time: `${h12}:${String(m).padStart(2,'0')} ${ampm} EAT` };
+  }
+
+  return { date: slotDate, time: slotTime };
+}
+
 const DEMO = {
   therapist: { id:'1', full_name:'Dr. Sarah Johnson', rating:4.9, review_count:127, specialties:['Anxiety','Depression','Stress Management'], bio:'Licensed clinical psychologist with 10+ years of experience helping clients overcome anxiety and depression through evidence-based therapeutic approaches.', years_of_experience:10, languages:'English, Spanish', price_per_session:80 },
   reviews: [
@@ -75,7 +108,7 @@ export default function TherapistDetail() {
               </div>
               <div style={{ fontSize:13, color:'var(--gray-500)', display:'flex', alignItems:'center', gap:6 }}>
                 <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" style={{width:14,height:14}}><path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                ${t.price_per_session} per session (60 minutes)
+                Ksh {t.price_per_session} per session (60 minutes)
               </div>
             </div>
             <div style={{ display:'flex', gap:6, flexWrap:'wrap', marginBottom:14 }}>
@@ -99,13 +132,25 @@ export default function TherapistDetail() {
           <div className="card" style={{ padding:20, marginBottom:14 }}>
             <h3 style={{ fontWeight:700, marginBottom:12, fontSize:15 }}>Next Available Slots</h3>
             <div style={{ display:'flex', gap:10, flexWrap:'wrap' }}>
-              {slots.map(s => (
-                <button key={s.id} onClick={() => navigate(`/book/${t.id}`, { state:{ slot:s } })}
-                  style={{ padding:'10px 16px', borderRadius:'var(--radius-sm)', border:'1.5px solid var(--gray-200)', background:'white', fontSize:13, fontWeight:500, cursor:'pointer', transition:'all 0.15s' }}>
-                  <div style={{ fontWeight:600 }}>{s.slot_date}</div>
-                  <div style={{ color:'var(--gray-500)', fontSize:12 }}>{s.slot_time}</div>
-                </button>
-              ))}
+              {slots.map(s => {
+                const { date, time } = formatSlot(s.slot_date, s.slot_time);
+                return (
+                  <button key={s.id} onClick={() => navigate(`/book/${t.id}`, { state:{ slot:s } })}
+                    style={{
+                      padding: '12px 18px',
+                      borderRadius: 'var(--radius-sm)',
+                      border: '1.5px solid var(--gray-200)',
+                      background: 'white',
+                      cursor: 'pointer',
+                      transition: 'all 0.15s',
+                      textAlign: 'left',
+                      minWidth: 100,
+                    }}>
+                    <div style={{ fontWeight:600, fontSize:13, marginBottom:3 }}>{date}</div>
+                    <div style={{ color:'var(--gray-400)', fontSize:11, letterSpacing:'0.01em' }}>{time}</div>
+                  </button>
+                );
+              })}
             </div>
           </div>
         )}

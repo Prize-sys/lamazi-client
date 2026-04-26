@@ -2,12 +2,9 @@ import React from 'react';
 import NavBar from '../components/NavBar';
 
 const RESOURCES = [
-  { name:'National Suicide Prevention Lifeline', desc:'24/7 free and confidential support for people in distress', contact:'988', type:'phone' },
   { name:'Crisis Text Line', desc:'Free, 24/7 support via text message', contact:'Text HOME to 741741', type:'text' },
   { name:'SAMHSA National Helpline', desc:'Treatment referral and information service for mental health', contact:'1-800-662-4357', type:'phone' },
   { name:'Domestic Violence Hotline', desc:'24/7 support for domestic violence victims', contact:'1-800-799-7233', type:'phone' },
-  { name:'Veterans Crisis Line', desc:'Support for veterans and their families', contact:'1-800-273-8255', type:'phone' },
-  { name:'LGBTQ+ Youth Support (Trevor)', desc:'Crisis intervention for LGBTQ+ young people', contact:'1-866-488-7386', type:'phone' },
 ];
 
 function PhoneIcon({ color = 'var(--red)' }) {

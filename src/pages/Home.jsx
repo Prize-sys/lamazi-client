@@ -101,7 +101,7 @@ export default function Home() {
                   ))}
                 </div>
                 <p>{t.bio}</p>
-                <div className="price">$ {t.price_per_session}/session</div>
+                <div className="price">Ksh {t.price_per_session}/session</div>
                 <button
                   className="btn-primary"
                   onClick={e => { e.stopPropagation(); navigate(`/book/${t.id}`); }}

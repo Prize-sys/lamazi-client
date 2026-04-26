@@ -62,7 +62,7 @@ export default function Booking() {
       <div>
         <div style={{ fontWeight:700, fontSize:15 }}>{therapist.full_name}</div>
         <div style={{ fontSize:12, color:'var(--gray-500)', marginTop:2 }}>{(therapist.specialties||[]).join(', ')}</div>
-        <div style={{ fontSize:13, fontWeight:600, marginTop:3 }}>${therapist.price_per_session} / session</div>
+        <div style={{ fontSize:13, fontWeight:600, marginTop:3 }}>Ksh {therapist.price_per_session} / session</div>
       </div>
     </div>
   );
@@ -153,20 +153,20 @@ export default function Booking() {
             )}
             <div style={{ background:'var(--gray-50)', borderRadius:'var(--radius-sm)', padding:14, marginBottom:14, border:'1px solid var(--gray-100)' }}>
               <div style={{ display:'flex', justifyContent:'space-between', marginBottom:6, fontSize:14 }}>
-                <span style={{ color:'var(--gray-600)' }}>Session fee</span><span>${therapist.price_per_session}.00</span>
+                <span style={{ color:'var(--gray-600)' }}>Session fee</span><span>Ksh {therapist.price_per_session}.00</span>
               </div>
               <div style={{ display:'flex', justifyContent:'space-between', marginBottom:8, fontSize:14, color:'var(--gray-500)' }}>
-                <span>Platform fee (15%)</span><span>${fee}</span>
+                <span>Platform fee (15%)</span><span>Ksh {fee}</span>
               </div>
               <div style={{ display:'flex', justifyContent:'space-between', fontWeight:700, fontSize:15, borderTop:'1px solid var(--gray-200)', paddingTop:8 }}>
-                <span>Total</span><span>${total}</span>
+                <span>Total</span><span>Ksh {total}</span>
               </div>
             </div>
             <div style={{ fontSize:12, color:'var(--gray-500)', marginBottom:14, padding:12, background:'#EFF6FF', borderRadius:'var(--radius-sm)', border:'1px solid #BFDBFE' }}>
               🔒 Your payment information is encrypted and secure. You will receive a receipt via email after booking confirmation.
             </div>
             <button className="btn-primary" onClick={handleConfirmPay} disabled={loading}>
-              {loading ? 'Processing...' : `Confirm & Pay $${total}`}
+              {loading ? 'Processing...' : `Confirm & Pay Ksh ${total}`}
             </button>
           </div>
         )}

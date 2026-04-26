@@ -3,11 +3,30 @@ import NavBar from '../components/NavBar';
 import { bookingAPI } from '../api';
 
 const DEMO_HISTORY = [
-  { id:'1', therapist_name:'Dr. Sarah Johnson', session_date:'Wednesday, December 10, 2025', session_time:'09:00', duration_minutes:60, status:'confirmed', amount:80 },
-  { id:'2', therapist_name:'Michael Chen', session_date:'Thursday, December 11, 2025', session_time:'13:00', duration_minutes:60, status:'confirmed', amount:95 },
-  { id:'3', therapist_name:'Dr. Emily Rodriguez', session_date:'Friday, December 5, 2025', session_time:'14:00', duration_minutes:60, status:'completed', amount:110 },
-  { id:'4', therapist_name:'Dr. Sarah Johnson', session_date:'Friday, December 12, 2025', session_time:'11:00', duration_minutes:60, status:'pending', amount:80 },
+  { id:'1', therapist_name:'Dr. Sarah Johnson', session_date:'2025-12-10T00:00:00Z', session_time:'09:00', duration_minutes:60, status:'confirmed', amount:80 },
+  { id:'2', therapist_name:'Michael Chen', session_date:'2025-12-11T00:00:00Z', session_time:'13:00', duration_minutes:60, status:'confirmed', amount:95 },
+  { id:'3', therapist_name:'Dr. Emily Rodriguez', session_date:'2025-12-05T00:00:00Z', session_time:'14:00', duration_minutes:60, status:'completed', amount:110 },
+  { id:'4', therapist_name:'Dr. Sarah Johnson', session_date:'2025-12-12T00:00:00Z', session_time:'11:00', duration_minutes:60, status:'pending', amount:80 },
 ];
+
+// Formats session_date (ISO or pre-formatted string) into "Wed, 10 Dec 2025"
+function formatSessionDate(dateStr) {
+  if (!dateStr) return '';
+  const isISO = /^\d{4}-\d{2}-\d{2}/.test(dateStr);
+  const d = isISO ? new Date(dateStr) : new Date(dateStr);
+  if (isNaN(d)) return dateStr; // fallback: return as-is if unparseable
+  return d.toLocaleDateString('en-KE', {
+    weekday: 'short', day: 'numeric', month: 'short', year: 'numeric',
+    timeZone: 'Africa/Nairobi'
+  });
+}
+
+// Formats session_time "HH:mm" as "09:00 EAT" (24h)
+function formatSessionTime(timeStr) {
+  if (!timeStr) return '';
+  const clean = timeStr.slice(0, 5); // "09:00"
+  return `${clean} EAT`;
+}
 
 const STATUS_BADGE = { confirmed:'badge-confirmed', completed:'badge-completed', pending:'badge-pending', cancelled:'badge-cancelled' };
 const STATUS_LABEL = { confirmed:'✓ Confirmed', completed:'✓ Completed', pending:'⏳ Pending', cancelled:'✕ Cancelled' };
@@ -52,11 +71,11 @@ export default function History() {
                   <div style={{ fontWeight:700, fontSize:14, marginBottom:3 }}>{b.therapist_name}</div>
                   <div style={{ fontSize:12, color:'var(--gray-500)', display:'flex', alignItems:'center', gap:4 }}>
                     <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" style={{width:12,height:12}}><path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" /></svg>
-                    {b.session_date}
+                    {formatSessionDate(b.session_date)}
                   </div>
                   <div style={{ fontSize:12, color:'var(--gray-500)', display:'flex', alignItems:'center', gap:4 }}>
                     <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" style={{width:12,height:12}}><path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                    {b.session_time} ({b.duration_minutes || 60} minutes)
+                    {formatSessionTime(b.session_time)} ({b.duration_minutes || 60} min)
                   </div>
                 </div>
               </div>
@@ -71,7 +90,7 @@ export default function History() {
                 )}
                 <button className="btn-outline" style={{ fontSize:12, padding:'6px 12px' }}><DocIcon /> Receipt</button>
               </div>
-              <span style={{ fontWeight:700, fontSize:14 }}>${b.amount}</span>
+              <span style={{ fontWeight:700, fontSize:14 }}>Ksh {b.amount}</span>
             </div>
           </div>
         ))}

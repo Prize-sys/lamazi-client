@@ -3,6 +3,21 @@ import { useNavigate } from 'react-router-dom';
 import NavBar from '../components/NavBar';
 import { bookingAPI } from '../api';
 
+function formatSessionDate(dateStr) {
+  if (!dateStr) return '';
+  const d = new Date(dateStr);
+  if (isNaN(d)) return dateStr;
+  return d.toLocaleDateString('en-KE', {
+    weekday: 'short', day: 'numeric', month: 'short', year: 'numeric',
+    timeZone: 'Africa/Nairobi'
+  });
+}
+
+function formatSessionTime(timeStr) {
+  if (!timeStr) return '';
+  return `${timeStr.slice(0, 5)} EAT`;
+}
+
 function CalendarIcon() {
   return <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" style={{width:48,height:48,color:'var(--gray-300)'}}>
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
@@ -52,11 +67,11 @@ export default function Bookings() {
                   <div style={{ fontWeight:700, fontSize:14, marginBottom:3 }}>{b.therapist_name}</div>
                   <div style={{ fontSize:12, color:'var(--gray-500)', display:'flex', alignItems:'center', gap:4 }}>
                     <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" style={{width:12,height:12}}><path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" /></svg>
-                    {b.session_date}
+                    {formatSessionDate(b.session_date)}
                   </div>
                   <div style={{ fontSize:12, color:'var(--gray-500)', display:'flex', alignItems:'center', gap:4 }}>
                     <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" style={{width:12,height:12}}><path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                    {b.session_time} ({b.duration_minutes || 60} minutes)
+                    {formatSessionTime(b.session_time)} ({b.duration_minutes || 60} min)
                   </div>
                 </div>
               </div>
@@ -64,7 +79,7 @@ export default function Bookings() {
             </div>
             <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', paddingTop:12, borderTop:'1px solid var(--gray-100)' }}>
               <button className="btn-outline" style={{ fontSize:12, padding:'6px 12px' }}><DocIcon /> Receipt</button>
-              <span style={{ fontWeight:700, fontSize:14 }}>${b.amount}</span>
+              <span style={{ fontWeight:700, fontSize:14 }}>Ksh {b.amount}</span>
             </div>
           </div>
         ))}
