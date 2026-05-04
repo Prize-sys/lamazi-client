@@ -235,7 +235,7 @@ export default function HistoryPage() {
           bookingId={reviewBookingId}
           onClose={() => setReviewBookingId(null)}
           onSubmit={() => {
-            setReviewedIds(prev => new Set([...prev, reviewBookingId]));
+            setReviewedIds(prev => new Set([...Array.from(prev), reviewBookingId]));
             setReviewBookingId(null);
           }}
         />

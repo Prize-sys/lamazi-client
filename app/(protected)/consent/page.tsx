@@ -81,7 +81,7 @@ export default function ConsentPage() {
   const allRequiredAccepted = missingRequired.every(r => accepted.has(r));
 
   const handleSubmit = async () => {
-    const toAccept = [...accepted].filter(a => !consentStatus?.status?.[a]?.accepted);
+    const toAccept = Array.from(accepted).filter((a) => !consentStatus?.status?.[a]?.accepted);
     if (toAccept.length === 0) {
       router.push('/discover');
       return;
