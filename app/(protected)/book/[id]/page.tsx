@@ -75,22 +75,21 @@ export default function BookingFlowPage({ params }: { params: { id: string } }) 
     </div>
   );
 
-  // FIXED: No platform fee surcharge — client pays price_per_session only
   const sessionFee = therapist.price_per_session;
   const reservationAmount = Math.round(sessionFee * 0.30);
   const balanceDue = sessionFee - reservationAmount;
   const amountDueNow = paymentType === 'full' ? sessionFee : reservationAmount;
 
-  const availableDates = [...new Set(slots.map(s => s.slot_date))];
-  const timesForDate = slots.filter(s => s.slot_date === selectedDate);
+  // FIX: Array.from() used instead of spread to support all TS targets
+  const availableDates = Array.from(new Set(slots.map((s) => s.slot_date)));
+  const timesForDate = slots.filter((s) => s.slot_date === selectedDate);
 
-  // Get refund percentage from real policy
   const daysUntilSession = selectedDate
     ? Math.ceil((new Date(selectedDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
     : 0;
   const hoursUntilSession = daysUntilSession * 24;
   const applicableRule = cancellationPolicy
-    .filter(r => hoursUntilSession >= r.hours_before)
+    .filter((r) => hoursUntilSession >= r.hours_before)
     .sort((a, b) => b.hours_before - a.hours_before)[0];
   const refundPercent = applicableRule?.refund_percent ?? 0;
 
@@ -103,7 +102,6 @@ export default function BookingFlowPage({ params }: { params: { id: string } }) 
     setError('');
 
     try {
-      // Step 1: Create booking
       const bookingRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/bookings`, {
         method: 'POST',
         headers: {
@@ -128,7 +126,6 @@ export default function BookingFlowPage({ params }: { params: { id: string } }) 
       const booking = await bookingRes.json();
       setBookingResult(booking);
 
-      // Step 2: Initiate M-Pesa payment
       if (paymentMethod === 'mpesa') {
         await fetch(`${process.env.NEXT_PUBLIC_API_URL}/payments/mpesa/initiate`, {
           method: 'POST',
@@ -174,16 +171,16 @@ export default function BookingFlowPage({ params }: { params: { id: string } }) 
               <div className="flex flex-col items-center flex-1">
                 <div className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-semibold ${
                   currentStep === step.key ? 'bg-blue-600 text-white' :
-                  steps.findIndex(s => s.key === currentStep) > i ? 'bg-green-500 text-white' :
+                  steps.findIndex((s) => s.key === currentStep) > i ? 'bg-green-500 text-white' :
                   'bg-gray-200 text-gray-600'
                 }`}>
-                  {steps.findIndex(s => s.key === currentStep) > i ? <Check className="w-4 h-4" /> : step.num}
+                  {steps.findIndex((s) => s.key === currentStep) > i ? <Check className="w-4 h-4" /> : step.num}
                 </div>
                 <span className="text-xs text-gray-600 mt-1 hidden sm:block">{step.label}</span>
               </div>
               {i < steps.length - 1 && (
                 <div className="flex-1 h-1 bg-gray-200 mx-2 -mt-5">
-                  <div className={`h-full bg-blue-600 transition-all ${steps.findIndex(s => s.key === currentStep) > i ? 'w-full' : 'w-0'}`} />
+                  <div className={`h-full bg-blue-600 transition-all ${steps.findIndex((s) => s.key === currentStep) > i ? 'w-full' : 'w-0'}`} />
                 </div>
               )}
             </div>
@@ -226,7 +223,7 @@ export default function BookingFlowPage({ params }: { params: { id: string } }) 
               <p className="text-gray-500 text-sm">No available dates. Please check back later.</p>
             ) : (
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                {availableDates.map(date => (
+                {availableDates.map((date) => (
                   <button
                     key={date}
                     onClick={() => { setSelectedDate(date); setSelectedTime(''); setSelectedSlotId(''); }}
@@ -250,7 +247,7 @@ export default function BookingFlowPage({ params }: { params: { id: string } }) 
                 <h3 className="font-semibold text-gray-900">Select Time</h3>
               </div>
               <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
-                {timesForDate.map(slot => (
+                {timesForDate.map((slot) => (
                   <button
                     key={slot.id}
                     onClick={() => { setSelectedTime(slot.slot_time); setSelectedSlotId(slot.id); }}
@@ -316,7 +313,7 @@ export default function BookingFlowPage({ params }: { params: { id: string } }) 
             )}
           </div>
 
-          {/* Cancellation Policy from real API */}
+          {/* Cancellation Policy */}
           {cancellationPolicy.length > 0 && (
             <div className="bg-white rounded-xl p-6 border border-gray-200">
               <div className="flex items-center gap-2 mb-4">
@@ -324,7 +321,7 @@ export default function BookingFlowPage({ params }: { params: { id: string } }) 
                 <h3 className="font-semibold text-gray-900">Cancellation Policy</h3>
               </div>
               <div className="space-y-2">
-                {cancellationPolicy.map(rule => (
+                {cancellationPolicy.map((rule) => (
                   <div key={rule.id} className="flex items-start gap-3">
                     <div className={`w-2 h-2 rounded-full mt-1.5 flex-shrink-0 ${rule.refund_percent === 100 ? 'bg-green-500' : rule.refund_percent > 0 ? 'bg-amber-500' : 'bg-red-500'}`} />
                     <p className="text-sm text-gray-700">{rule.description}</p>
@@ -347,7 +344,7 @@ export default function BookingFlowPage({ params }: { params: { id: string } }) 
             </div>
 
             <div className="space-y-3 mb-5">
-              {(['mpesa', 'visa', 'mastercard'] as const).map(method => (
+              {(['mpesa', 'visa', 'mastercard'] as const).map((method) => (
                 <button
                   key={method}
                   onClick={() => setPaymentMethod(method)}
@@ -360,7 +357,6 @@ export default function BookingFlowPage({ params }: { params: { id: string } }) 
               ))}
             </div>
 
-            {/* M-Pesa phone number — required */}
             {paymentMethod === 'mpesa' && (
               <div className="mb-5">
                 <label className="block text-sm font-medium text-gray-900 mb-2">M-Pesa Phone Number</label>
